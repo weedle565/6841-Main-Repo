@@ -1,0 +1,5 @@
+# ninja log v5
+1	182	7488670411523492	build.ninja	5565637713bda7ed
+10	307	7488662538390404	CMakeFiles/6841Project.dir/microui.c.obj	2b5896c8014ae1b9
+6	94	7488662536332537	CMakeFiles/6841Project.dir/server_window.c.obj	d47386a1a9979be3
+1	1103	7488662546410845	CMakeFiles/6841Project.dir/server.c.obj	11d4743a44eab670
