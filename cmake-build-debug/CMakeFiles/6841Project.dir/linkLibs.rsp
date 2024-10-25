@@ -1,0 +1,1 @@
+  -LC:/clibs/SDL/lib/x64  -LC:/clibs/tff/lib/x64  -LC:/clibs/sdl_image/lib/x64  -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lwsock32 -lws2_32 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
