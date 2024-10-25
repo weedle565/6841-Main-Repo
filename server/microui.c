@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2024 rxi
+** Copyright (c) 2020 rxi
 **
 ** Permission is hereby granted, free of charge, to any person obtaining a copy
 ** of this software and associated documentation files (the "Software"), to
@@ -20,58 +20,62 @@
 ** IN THE SOFTWARE.
 */
 
-// Library is from: https://github.com/rxi/microui
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "microui.h"
-
+//#include <windows.h>
 #define unused(x) ((void) (x))
 
 #define expect(x) do {                                               \
-    if (!(x)) {                                                      \
-      fprintf(stderr, "Fatal error: %s:%d: assertion '%s' failed\n", \
-        __FILE__, __LINE__, #x);                                     \
-      abort();                                                       \
-    }                                                                \
-  } while (0)
+if (!(x)) {                                                      \
+fprintf(stderr, "Fatal error: %s:%d: assertion '%s' failed\n", \
+__FILE__, __LINE__, #x);                                     \
+abort();                                                       \
+}                                                                \
+} while (0)
 
 #define push(stk, val) do {                                                 \
-    expect((stk).idx < (int) (sizeof((stk).items) / sizeof(*(stk).items))); \
-    (stk).items[(stk).idx] = (val);                                         \
-    (stk).idx++; /* incremented after incase `val` uses this value */       \
-  } while (0)
+expect((stk).idx < (int) (sizeof((stk).items) / sizeof(*(stk).items))); \
+(stk).items[(stk).idx] = (val);                                         \
+(stk).idx++; /* incremented after incase `val` uses this value */       \
+} while (0)
 
 #define pop(stk) do {      \
-    expect((stk).idx > 0); \
-    (stk).idx--;           \
-  } while (0)
+expect((stk).idx > 0); \
+(stk).idx--;           \
+} while (0)
 
 
 static mu_Rect unclipped_rect = { 0, 0, 0x1000000, 0x1000000 };
 
 static mu_Style default_style = {
-        /* font | size | padding | spacing | indent */
-        NULL, { 68, 10 }, 5, 4, 24,
-        /* title_height | scrollbar_size | thumb_size */
-        24, 12, 8,
-        {
-                { 230, 230, 230, 255 }, /* MU_COLOR_TEXT */
-                { 25,  25,  25,  255 }, /* MU_COLOR_BORDER */
-                { 50,  50,  50,  255 }, /* MU_COLOR_WINDOWBG */
-                { 25,  25,  25,  255 }, /* MU_COLOR_TITLEBG */
-                { 240, 240, 240, 255 }, /* MU_COLOR_TITLETEXT */
-                { 0,   0,   0,   0   }, /* MU_COLOR_PANELBG */
-                { 75,  75,  75,  255 }, /* MU_COLOR_BUTTON */
-                { 95,  95,  95,  255 }, /* MU_COLOR_BUTTONHOVER */
-                { 115, 115, 115, 255 }, /* MU_COLOR_BUTTONFOCUS */
-                { 30,  30,  30,  255 }, /* MU_COLOR_BASE */
-                { 35,  35,  35,  255 }, /* MU_COLOR_BASEHOVER */
-                { 40,  40,  40,  255 }, /* MU_COLOR_BASEFOCUS */
-                { 43,  43,  43,  255 }, /* MU_COLOR_SCROLLBASE */
-                { 30,  30,  30,  255 }  /* MU_COLOR_SCROLLTHUMB */
-        }
+    /* font | size | padding | spacing | indent */
+    NULL, { 68, 10 }, 5, 4, 24,
+    /* title_height | scrollbar_size | thumb_size */
+    24, 12, 8,
+    {
+        { 230, 230, 230, 255 }, /* MU_COLOR_TEXT */
+        { 0, 255, 255,  255  }, /* MU_COLOR_BORDER 137,  73,  136*/
+        { 15,  15,  15,  255 }, /* MU_COLOR_WINDOWBG */
+        { 15,  15,  15,  255 }, /* MU_COLOR_TITLEBG */
+        { 240, 240, 240, 255 }, /* MU_COLOR_TITLETEXT */
+        { 0,   0,   0,   0   }, /* MU_COLOR_PANELBG */
+        { 25,  25,  25,  255 }, /* MU_COLOR_BUTTON */
+        { 30,  30,  30,  255 }, /* MU_COLOR_BUTTONHOVER */
+        { 35, 35, 35, 255 }, /* MU_COLOR_BUTTONFOCUS */
+        { 25,  25,  25,  255 }, /* MU_COLOR_BASE */
+        { 30,  30,  30,  255 }, /* MU_COLOR_BASEHOVER */
+        { 35,  35,  35,  255 }, /* MU_COLOR_BASEFOCUS */
+        { 43,  43,  43,  255 }, /* MU_COLOR_SCROLLBASE */
+        { 35,  35,  35,  255 },  /* MU_COLOR_SCROLLTHUMB */
+        { 247, 0, 255,   255 },  /* MU_COLOR_GROUP */
+        { 25,  25,  25,  255 },  /* MU_COLOR_GROUPBUTTON */
+        { 30,  30,  30,  255 },  /* MU_COLOR_GROUPBUTTONHOVER */
+        { 35,  35,  35,  255 },  /* MU_COLOR_GROUPBUTTONFOCUS */
+        { 247, 0, 255, 255 }  /* MU_COLOR_CLICKABLETEXT */
+
+    }
 };
 
 
@@ -177,7 +181,7 @@ void mu_end(mu_Context *ctx) {
     if (ctx->mouse_pressed && ctx->next_hover_root &&
         ctx->next_hover_root->zindex < ctx->last_zindex &&
         ctx->next_hover_root->zindex >= 0
-            ) {
+        ) {
         mu_bring_to_front(ctx, ctx->next_hover_root);
     }
 
@@ -489,7 +493,7 @@ void mu_draw_text(mu_Context *ctx, mu_Font font, const char *str, int len,
 {
     mu_Command *cmd;
     mu_Rect rect = mu_rect(
-            pos.x, pos.y, ctx->text_width(font, str, len), ctx->text_height(font));
+                           pos.x, pos.y, ctx->text_width(font, str, len), ctx->text_height(font));
     int clipped = mu_check_clip(ctx, rect);
     if (clipped == MU_CLIP_ALL ) { return; }
     if (clipped == MU_CLIP_PART) { mu_set_clip(ctx, mu_get_clip_rect(ctx)); }
@@ -525,8 +529,6 @@ void mu_draw_icon(mu_Context *ctx, int id, mu_Rect rect, mu_Color color) {
 /*============================================================================
 ** layout
 **============================================================================*/
-
-enum { RELATIVE = 1, ABSOLUTE = 2 };
 
 
 void mu_layout_begin_column(mu_Context *ctx) {
@@ -573,7 +575,7 @@ void mu_layout_height(mu_Context *ctx, int height) {
 void mu_layout_set_next(mu_Context *ctx, mu_Rect r, int relative) {
     mu_Layout *layout = get_layout(ctx);
     layout->next = r;
-    layout->next_type = relative ? RELATIVE : ABSOLUTE;
+    layout->next_type = relative ? 1 : 2;
 }
 
 
@@ -587,7 +589,7 @@ mu_Rect mu_layout_next(mu_Context *ctx) {
         int type = layout->next_type;
         layout->next_type = 0;
         res = layout->next;
-        if (type == ABSOLUTE) { return (ctx->last_rect = res); }
+        if (type == 2) { return (ctx->last_rect = res); }
 
     } else {
         /* handle next row */
@@ -673,8 +675,8 @@ void mu_draw_control_text(mu_Context *ctx, const char *str, mu_Rect rect,
 
 int mu_mouse_over(mu_Context *ctx, mu_Rect rect) {
     return rect_overlaps_vec2(rect, ctx->mouse_pos) &&
-           rect_overlaps_vec2(mu_get_clip_rect(ctx), ctx->mouse_pos) &&
-           in_hover_root(ctx);
+        rect_overlaps_vec2(mu_get_clip_rect(ctx), ctx->mouse_pos) &&
+        in_hover_root(ctx);
 }
 
 
@@ -734,7 +736,7 @@ void mu_label(mu_Context *ctx, const char *text) {
 int mu_button_ex(mu_Context *ctx, const char *label, int icon, int opt) {
     int res = 0;
     mu_Id id = label ? mu_get_id(ctx, label, strlen(label))
-                     : mu_get_id(ctx, &icon, sizeof(icon));
+        : mu_get_id(ctx, &icon, sizeof(icon));
     mu_Rect r = mu_layout_next(ctx);
     mu_update_control(ctx, id, r, opt);
     /* handle click */
@@ -748,6 +750,25 @@ int mu_button_ex(mu_Context *ctx, const char *label, int icon, int opt) {
     return res;
 }
 
+int mu_clickable_text_ex(mu_Context *ctx, const char *label, int icon, int opt, int color_id) {
+    int res = 0;
+    mu_Id id = label ? mu_get_id(ctx, label, strlen(label))
+        : mu_get_id(ctx, &icon, sizeof(icon));
+    mu_Rect r = mu_layout_next(ctx);
+    mu_update_control(ctx, id, r, opt);
+    /* handle click */
+    if (ctx->mouse_pressed == MU_MOUSE_LEFT && ctx->focus == id) {
+        res |= MU_RES_SUBMIT;
+
+        //if (label) { mu_draw_control_text(ctx, label, r, MU_COLOR_CLICKABLETEXT, opt); }
+    }
+    /* draw */
+
+    //mu_draw_control_frame(ctx, id, r, MU_COLOR_BUTTON, opt);
+    if (label) { mu_draw_control_text(ctx, label, r, color_id, opt); }
+    //if (icon) { mu_draw_icon(ctx, icon, r, ctx->style->colors[MU_COLOR_TEXT]); }
+    return res;
+}
 
 int mu_checkbox(mu_Context *ctx, const char *label, int *state) {
     int res = 0;
@@ -799,6 +820,15 @@ int mu_textbox_raw(mu_Context *ctx, char *buf, int bufsz, mu_Id id, mu_Rect r,
             mu_set_focus(ctx, 0);
             res |= MU_RES_SUBMIT;
         }
+	/* handle paste */
+	if(ctx->key_pressed & MU_KEY_CTRL && GetAsyncKeyState('V') & 0x8000) {
+	  OpenClipboard(0);
+	  char* clip_buf = (char*)GetClipboardData(CF_TEXT);
+	  memcpy(buf, clip_buf, strlen(clip_buf));
+	  res |= MU_RES_CHANGE;
+	  CloseClipboard();
+	  //return res;
+	}
     }
 
     /* draw */
@@ -826,13 +856,13 @@ int mu_textbox_raw(mu_Context *ctx, char *buf, int bufsz, mu_Id id, mu_Rect r,
 static int number_textbox(mu_Context *ctx, mu_Real *value, mu_Rect r, mu_Id id) {
     if (ctx->mouse_pressed == MU_MOUSE_LEFT && ctx->key_down & MU_KEY_SHIFT &&
         ctx->hover == id
-            ) {
+        ) {
         ctx->number_edit = id;
         sprintf(ctx->number_edit_buf, MU_REAL_FMT, *value);
     }
     if (ctx->number_edit == id) {
         int res = mu_textbox_raw(
-                ctx, ctx->number_edit_buf, sizeof(ctx->number_edit_buf), id, r, 0);
+                                 ctx, ctx->number_edit_buf, sizeof(ctx->number_edit_buf), id, r, 0);
         if (res & MU_RES_SUBMIT || ctx->focus != id) {
             *value = strtod(ctx->number_edit_buf, NULL);
             ctx->number_edit = 0;
@@ -872,7 +902,7 @@ int mu_slider_ex(mu_Context *ctx, mu_Real *value, mu_Real low, mu_Real high,
         (ctx->mouse_down | ctx->mouse_pressed) == MU_MOUSE_LEFT)
     {
         v = low + (ctx->mouse_pos.x - base.x) * (high - low) / base.w;
-        if (step) { v = ((long long)((v + step / 2) / step)) * step; }
+        if (step) { v = (((v + step / 2) / step)) * step; }
     }
     /* clamp and store value, update res */
     *value = v = mu_clamp(v, low, high);
@@ -925,7 +955,7 @@ int mu_number_ex(mu_Context *ctx, mu_Real *value, mu_Real step,
 }
 
 
-static int header(mu_Context *ctx, const char *label, int istreenode, int opt) {
+static int header(mu_Context *ctx, const char *label, int istreenode, int opt, int height) {
     mu_Rect r;
     int active, expanded;
     mu_Id id = mu_get_id(ctx, label, strlen(label));
@@ -951,28 +981,38 @@ static int header(mu_Context *ctx, const char *label, int istreenode, int opt) {
 
     /* draw */
     if (istreenode) {
-        if (ctx->hover == id) { ctx->draw_frame(ctx, r, MU_COLOR_BUTTONHOVER); }
+        if (ctx->hover == id) { ctx->draw_frame(ctx, r, MU_COLOR_GROUPBUTTONHOVER); }
     } else {
-        mu_draw_control_frame(ctx, id, r, MU_COLOR_BUTTON, 0);
+        mu_draw_control_frame(ctx, id, r, MU_COLOR_GROUPBUTTON, 0);
     }
     mu_draw_icon(
-            ctx, expanded ? MU_ICON_EXPANDED : MU_ICON_COLLAPSED,
-            mu_rect(r.x, r.y, r.h, r.h), ctx->style->colors[MU_COLOR_TEXT]);
+                 ctx, expanded ? MU_ICON_EXPANDED : MU_ICON_COLLAPSED,
+                 mu_rect(r.x, r.y, r.h, r.h), ctx->style->colors[MU_COLOR_TEXT]);
     r.x += r.h - ctx->style->padding;
     r.w -= r.h - ctx->style->padding;
     mu_draw_control_text(ctx, label, r, MU_COLOR_TEXT, 0);
+
+    if (expanded) {
+        mu_Rect rekt;
+        rekt.x = r.x - 15;
+        rekt.y = r.y;
+        rekt.w = r.w + 15;
+        rekt.h = r.h + height;
+        //mu_Color col = ctx->style->colors[MU_COLOR_GROUP];
+        mu_draw_box(ctx, expand_rect(rekt, 1), ctx->style->colors[MU_COLOR_BORDER]);
+    }
 
     return expanded ? MU_RES_ACTIVE : 0;
 }
 
 
-int mu_header_ex(mu_Context *ctx, const char *label, int opt) {
-    return header(ctx, label, 0, opt);
+int mu_header_ex(mu_Context *ctx, const char *label, int opt, int height) {
+    return header(ctx, label, 0, opt, height);
 }
 
 
-int mu_begin_treenode_ex(mu_Context *ctx, const char *label, int opt) {
-    int res = header(ctx, label, 1, opt);
+int mu_begin_treenode_ex(mu_Context *ctx, const char *label, int opt, int height) {
+    int res = header(ctx, label, 1, opt, height);
     if (res & MU_RES_ACTIVE) {
         get_layout(ctx)->indent += ctx->style->indent;
         push(ctx->id_stack, ctx->last_id);
@@ -988,41 +1028,41 @@ void mu_end_treenode(mu_Context *ctx) {
 
 
 #define scrollbar(ctx, cnt, b, cs, x, y, w, h)                              \
-  do {                                                                      \
-    /* only add scrollbar if content size is larger than body */            \
-    int maxscroll = cs.y - b->h;                                            \
-                                                                            \
-    if (maxscroll > 0 && b->h > 0) {                                        \
-      mu_Rect base, thumb;                                                  \
-      mu_Id id = mu_get_id(ctx, "!scrollbar" #y, 11);                       \
-                                                                            \
-      /* get sizing / positioning */                                        \
-      base = *b;                                                            \
-      base.x = b->x + b->w;                                                 \
-      base.w = ctx->style->scrollbar_size;                                  \
-                                                                            \
-      /* handle input */                                                    \
-      mu_update_control(ctx, id, base, 0);                                  \
-      if (ctx->focus == id && ctx->mouse_down == MU_MOUSE_LEFT) {           \
-        cnt->scroll.y += ctx->mouse_delta.y * cs.y / base.h;                \
-      }                                                                     \
-      /* clamp scroll to limits */                                          \
-      cnt->scroll.y = mu_clamp(cnt->scroll.y, 0, maxscroll);                \
-                                                                            \
-      /* draw base and thumb */                                             \
-      ctx->draw_frame(ctx, base, MU_COLOR_SCROLLBASE);                      \
-      thumb = base;                                                         \
-      thumb.h = mu_max(ctx->style->thumb_size, base.h * b->h / cs.y);       \
-      thumb.y += cnt->scroll.y * (base.h - thumb.h) / maxscroll;            \
-      ctx->draw_frame(ctx, thumb, MU_COLOR_SCROLLTHUMB);                    \
-                                                                            \
-      /* set this as the scroll_target (will get scrolled on mousewheel) */ \
-      /* if the mouse is over it */                                         \
-      if (mu_mouse_over(ctx, *b)) { ctx->scroll_target = cnt; }             \
-    } else {                                                                \
-      cnt->scroll.y = 0;                                                    \
-    }                                                                       \
-  } while (0)
+do {                                                                      \
+/* only add scrollbar if content size is larger than body */            \
+int maxscroll = cs.y - b->h;                                            \
+\
+if (maxscroll > 0 && b->h > 0) {                                        \
+mu_Rect base, thumb;                                                  \
+mu_Id id = mu_get_id(ctx, "!scrollbar" #y, 11);                       \
+\
+/* get sizing / positioning */                                        \
+base = *b;                                                            \
+base.x = b->x + b->w;                                                 \
+base.w = ctx->style->scrollbar_size;                                  \
+\
+/* handle input */                                                    \
+mu_update_control(ctx, id, base, 0);                                  \
+if (ctx->focus == id && ctx->mouse_down == MU_MOUSE_LEFT) {           \
+cnt->scroll.y += ctx->mouse_delta.y * cs.y / base.h;                \
+}                                                                     \
+/* clamp scroll to limits */                                          \
+cnt->scroll.y = mu_clamp(cnt->scroll.y, 0, maxscroll);                \
+\
+/* draw base and thumb */                                             \
+ctx->draw_frame(ctx, base, MU_COLOR_SCROLLBASE);                      \
+thumb = base;                                                         \
+thumb.h = mu_max(ctx->style->thumb_size, base.h * b->h / cs.y);       \
+thumb.y += cnt->scroll.y * (base.h - thumb.h) / maxscroll;            \
+ctx->draw_frame(ctx, thumb, MU_COLOR_SCROLLTHUMB);                    \
+\
+/* set this as the scroll_target (will get scrolled on mousewheel) */ \
+/* if the mouse is over it */                                         \
+if (mu_mouse_over(ctx, *b)) { ctx->scroll_target = cnt; }             \
+} else {                                                                \
+cnt->scroll.y = 0;                                                    \
+}                                                                       \
+} while (0)
 
 
 static void scrollbars(mu_Context *ctx, mu_Container *cnt, mu_Rect *body) {
@@ -1043,8 +1083,8 @@ static void scrollbars(mu_Context *ctx, mu_Container *cnt, mu_Rect *body) {
 
 
 static void push_container_body(
-        mu_Context *ctx, mu_Container *cnt, mu_Rect body, int opt
-) {
+                                mu_Context *ctx, mu_Container *cnt, mu_Rect body, int opt
+                                ) {
     if (~opt & MU_OPT_NOSCROLL) { scrollbars(ctx, cnt, &body); }
     push_layout(ctx, expand_rect(body, -ctx->style->padding), cnt->scroll);
     cnt->body = body;
@@ -1060,7 +1100,7 @@ static void begin_root_container(mu_Context *ctx, mu_Container *cnt) {
     ** higher zindex than the current hover root */
     if (rect_overlaps_vec2(cnt->rect, ctx->mouse_pos) &&
         (!ctx->next_hover_root || cnt->zindex > ctx->next_hover_root->zindex)
-            ) {
+        ) {
         ctx->next_hover_root = cnt;
     }
     /* clipping is reset here in case a root-container is made within
@@ -1110,8 +1150,8 @@ int mu_begin_window_ex(mu_Context *ctx, const char *title, mu_Rect rect, int opt
             mu_update_control(ctx, id, tr, opt);
             mu_draw_control_text(ctx, title, tr, MU_COLOR_TITLETEXT, opt);
             if (id == ctx->focus && ctx->mouse_down == MU_MOUSE_LEFT) {
-                cnt->rect.x += ctx->mouse_delta.x;
-                cnt->rect.y += ctx->mouse_delta.y;
+                //cnt->rect.x += ctx->mouse_delta.x;
+                //cnt->rect.y += ctx->mouse_delta.y;
             }
             body.y += tr.h;
             body.h -= tr.h;
@@ -1180,7 +1220,7 @@ void mu_open_popup(mu_Context *ctx, const char *name) {
 
 int mu_begin_popup(mu_Context *ctx, const char *name) {
     int opt = MU_OPT_POPUP | MU_OPT_AUTOSIZE | MU_OPT_NORESIZE |
-              MU_OPT_NOSCROLL | MU_OPT_NOTITLE | MU_OPT_CLOSED;
+        MU_OPT_NOSCROLL | MU_OPT_NOTITLE | MU_OPT_CLOSED;
     return mu_begin_window_ex(ctx, name, mu_rect(0, 0, 0, 0), opt);
 }
 

@@ -1,16 +1,14 @@
 /*
-** Copyright (c) 2024 rxi
+** Copyright (c) 2020 rxi
 **
 ** This library is free software; you can redistribute it and/or modify it
 ** under the terms of the MIT license. See `microui.c` for details.
 */
 
-// Library is from: https://github.com/rxi/microui
-
 #ifndef MICROUI_H
 #define MICROUI_H
 
-#define MU_VERSION "2.02"
+#define MU_VERSION "2.01"
 
 #define MU_COMMANDLIST_SIZE     (256 * 1024)
 #define MU_ROOTLIST_SIZE        32
@@ -60,6 +58,11 @@ enum {
     MU_COLOR_BASEFOCUS,
     MU_COLOR_SCROLLBASE,
     MU_COLOR_SCROLLTHUMB,
+    MU_COLOR_GROUP,
+    MU_COLOR_GROUPBUTTON,
+    MU_COLOR_GROUPBUTTONHOVER,
+    MU_COLOR_GROUPBUTTONFOCUS,
+    MU_COLOR_CLICKABLETEXT,
     MU_COLOR_MAX
 };
 
@@ -268,24 +271,26 @@ int mu_mouse_over(mu_Context *ctx, mu_Rect rect);
 void mu_update_control(mu_Context *ctx, mu_Id id, mu_Rect rect, int opt);
 
 #define mu_button(ctx, label)             mu_button_ex(ctx, label, 0, MU_OPT_ALIGNCENTER)
+#define mu_clickable_text(ctx, label, color_id)             mu_clickable_text_ex(ctx, label, 0, MU_OPT_ALIGNCENTER, color_id)
 #define mu_textbox(ctx, buf, bufsz)       mu_textbox_ex(ctx, buf, bufsz, 0)
 #define mu_slider(ctx, value, lo, hi)     mu_slider_ex(ctx, value, lo, hi, 0, MU_SLIDER_FMT, MU_OPT_ALIGNCENTER)
 #define mu_number(ctx, value, step)       mu_number_ex(ctx, value, step, MU_SLIDER_FMT, MU_OPT_ALIGNCENTER)
-#define mu_header(ctx, label)             mu_header_ex(ctx, label, 0)
-#define mu_begin_treenode(ctx, label)     mu_begin_treenode_ex(ctx, label, 0)
+#define mu_header(ctx, label, height)             mu_header_ex(ctx, label, 0, height)
+#define mu_begin_treenode(ctx, label, height)     mu_begin_treenode_ex(ctx, label, 0, height)
 #define mu_begin_window(ctx, title, rect) mu_begin_window_ex(ctx, title, rect, 0)
 #define mu_begin_panel(ctx, name)         mu_begin_panel_ex(ctx, name, 0)
 
 void mu_text(mu_Context *ctx, const char *text);
 void mu_label(mu_Context *ctx, const char *text);
 int mu_button_ex(mu_Context *ctx, const char *label, int icon, int opt);
+int mu_clickable_text_ex(mu_Context *ctx, const char *label, int icon, int opt, int color_id);
 int mu_checkbox(mu_Context *ctx, const char *label, int *state);
 int mu_textbox_raw(mu_Context *ctx, char *buf, int bufsz, mu_Id id, mu_Rect r, int opt);
 int mu_textbox_ex(mu_Context *ctx, char *buf, int bufsz, int opt);
 int mu_slider_ex(mu_Context *ctx, mu_Real *value, mu_Real low, mu_Real high, mu_Real step, const char *fmt, int opt);
 int mu_number_ex(mu_Context *ctx, mu_Real *value, mu_Real step, const char *fmt, int opt);
-int mu_header_ex(mu_Context *ctx, const char *label, int opt);
-int mu_begin_treenode_ex(mu_Context *ctx, const char *label, int opt);
+int mu_header_ex(mu_Context *ctx, const char *label, int opt, int height);
+int mu_begin_treenode_ex(mu_Context *ctx, const char *label, int opt, int height);
 void mu_end_treenode(mu_Context *ctx);
 int mu_begin_window_ex(mu_Context *ctx, const char *title, mu_Rect rect, int opt);
 void mu_end_window(mu_Context *ctx);
@@ -296,3 +301,4 @@ void mu_begin_panel_ex(mu_Context *ctx, const char *name, int opt);
 void mu_end_panel(mu_Context *ctx);
 
 #endif
+#include <windows.h>
