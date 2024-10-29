@@ -128,20 +128,20 @@ CMakeFiles/6841Project.dir/server/render.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/6841Project.dir/server/render.c.s"
 	"F:\CLION\CLion 2024.2.1\bin\mingw\bin\gcc.exe" $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\olive\CLionProjects\6841-Project\server\render.c -o CMakeFiles\6841Project.dir\server\render.c.s
 
-CMakeFiles/6841Project.dir/client/system.c.obj: CMakeFiles/6841Project.dir/flags.make
-CMakeFiles/6841Project.dir/client/system.c.obj: CMakeFiles/6841Project.dir/includes_C.rsp
-CMakeFiles/6841Project.dir/client/system.c.obj: C:/Users/olive/CLionProjects/6841-Project/client/system.c
-CMakeFiles/6841Project.dir/client/system.c.obj: CMakeFiles/6841Project.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\olive\CLionProjects\6841-Project\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/6841Project.dir/client/system.c.obj"
-	"F:\CLION\CLion 2024.2.1\bin\mingw\bin\gcc.exe" $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/6841Project.dir/client/system.c.obj -MF CMakeFiles\6841Project.dir\client\system.c.obj.d -o CMakeFiles\6841Project.dir\client\system.c.obj -c C:\Users\olive\CLionProjects\6841-Project\client\system.c
+CMakeFiles/6841Project.dir/functions/keylogger.c.obj: CMakeFiles/6841Project.dir/flags.make
+CMakeFiles/6841Project.dir/functions/keylogger.c.obj: CMakeFiles/6841Project.dir/includes_C.rsp
+CMakeFiles/6841Project.dir/functions/keylogger.c.obj: C:/Users/olive/CLionProjects/6841-Project/functions/keylogger.c
+CMakeFiles/6841Project.dir/functions/keylogger.c.obj: CMakeFiles/6841Project.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\olive\CLionProjects\6841-Project\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/6841Project.dir/functions/keylogger.c.obj"
+	"F:\CLION\CLion 2024.2.1\bin\mingw\bin\gcc.exe" $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/6841Project.dir/functions/keylogger.c.obj -MF CMakeFiles\6841Project.dir\functions\keylogger.c.obj.d -o CMakeFiles\6841Project.dir\functions\keylogger.c.obj -c C:\Users\olive\CLionProjects\6841-Project\functions\keylogger.c
 
-CMakeFiles/6841Project.dir/client/system.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/6841Project.dir/client/system.c.i"
-	"F:\CLION\CLion 2024.2.1\bin\mingw\bin\gcc.exe" $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\olive\CLionProjects\6841-Project\client\system.c > CMakeFiles\6841Project.dir\client\system.c.i
+CMakeFiles/6841Project.dir/functions/keylogger.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/6841Project.dir/functions/keylogger.c.i"
+	"F:\CLION\CLion 2024.2.1\bin\mingw\bin\gcc.exe" $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\olive\CLionProjects\6841-Project\functions\keylogger.c > CMakeFiles\6841Project.dir\functions\keylogger.c.i
 
-CMakeFiles/6841Project.dir/client/system.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/6841Project.dir/client/system.c.s"
-	"F:\CLION\CLion 2024.2.1\bin\mingw\bin\gcc.exe" $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\olive\CLionProjects\6841-Project\client\system.c -o CMakeFiles\6841Project.dir\client\system.c.s
+CMakeFiles/6841Project.dir/functions/keylogger.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/6841Project.dir/functions/keylogger.c.s"
+	"F:\CLION\CLion 2024.2.1\bin\mingw\bin\gcc.exe" $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\olive\CLionProjects\6841-Project\functions\keylogger.c -o CMakeFiles\6841Project.dir\functions\keylogger.c.s
 
 # Object files for target 6841Project
 6841Project_OBJECTS = \
@@ -149,7 +149,7 @@ CMakeFiles/6841Project.dir/client/system.c.s: cmake_force
 "CMakeFiles/6841Project.dir/server/microui.c.obj" \
 "CMakeFiles/6841Project.dir/server_window.c.obj" \
 "CMakeFiles/6841Project.dir/server/render.c.obj" \
-"CMakeFiles/6841Project.dir/client/system.c.obj"
+"CMakeFiles/6841Project.dir/functions/keylogger.c.obj"
 
 # External object files for target 6841Project
 6841Project_EXTERNAL_OBJECTS =
@@ -158,7 +158,7 @@ CMakeFiles/6841Project.dir/client/system.c.s: cmake_force
 6841Project.exe: CMakeFiles/6841Project.dir/server/microui.c.obj
 6841Project.exe: CMakeFiles/6841Project.dir/server_window.c.obj
 6841Project.exe: CMakeFiles/6841Project.dir/server/render.c.obj
-6841Project.exe: CMakeFiles/6841Project.dir/client/system.c.obj
+6841Project.exe: CMakeFiles/6841Project.dir/functions/keylogger.c.obj
 6841Project.exe: CMakeFiles/6841Project.dir/build.make
 6841Project.exe: CMakeFiles/6841Project.dir/linkLibs.rsp
 6841Project.exe: CMakeFiles/6841Project.dir/objects1.rsp

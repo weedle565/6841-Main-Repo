@@ -63,6 +63,7 @@ CMAKE_BINARY_DIR = C:\Users\olive\CLionProjects\6841-Project\cmake-build-debug
 
 # The main recursive "all" target.
 all: CMakeFiles/6841Project.dir/all
+all: CMakeFiles/Client_Exe.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -71,6 +72,7 @@ preinstall:
 
 # The main recursive "clean" target.
 clean: CMakeFiles/6841Project.dir/clean
+clean: CMakeFiles/Client_Exe.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -98,6 +100,32 @@ CMakeFiles/6841Project.dir/rule: cmake_check_build_system
 CMakeFiles/6841Project.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\6841Project.dir\build.make CMakeFiles/6841Project.dir/clean
 .PHONY : CMakeFiles/6841Project.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/Client_Exe.dir
+
+# All Build rule for target.
+CMakeFiles/Client_Exe.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=C:\Users\olive\CLionProjects\6841-Project\cmake-build-debug\CMakeFiles --progress-num=7,8,9,10,11 "Built target Client_Exe"
+.PHONY : CMakeFiles/Client_Exe.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/Client_Exe.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\olive\CLionProjects\6841-Project\cmake-build-debug\CMakeFiles 5
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/Client_Exe.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\olive\CLionProjects\6841-Project\cmake-build-debug\CMakeFiles 0
+.PHONY : CMakeFiles/Client_Exe.dir/rule
+
+# Convenience name for target.
+Client_Exe: CMakeFiles/Client_Exe.dir/rule
+.PHONY : Client_Exe
+
+# clean rule for target.
+CMakeFiles/Client_Exe.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/clean
+.PHONY : CMakeFiles/Client_Exe.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

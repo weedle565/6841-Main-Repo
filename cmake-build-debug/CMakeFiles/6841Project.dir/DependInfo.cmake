@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "C:/Users/olive/CLionProjects/6841-Project/client/system.c" "CMakeFiles/6841Project.dir/client/system.c.obj" "gcc" "CMakeFiles/6841Project.dir/client/system.c.obj.d"
+  "C:/Users/olive/CLionProjects/6841-Project/functions/keylogger.c" "CMakeFiles/6841Project.dir/functions/keylogger.c.obj" "gcc" "CMakeFiles/6841Project.dir/functions/keylogger.c.obj.d"
   "C:/Users/olive/CLionProjects/6841-Project/server/microui.c" "CMakeFiles/6841Project.dir/server/microui.c.obj" "gcc" "CMakeFiles/6841Project.dir/server/microui.c.obj.d"
   "C:/Users/olive/CLionProjects/6841-Project/server/render.c" "CMakeFiles/6841Project.dir/server/render.c.obj" "gcc" "CMakeFiles/6841Project.dir/server/render.c.obj.d"
   "C:/Users/olive/CLionProjects/6841-Project/server/server.c" "CMakeFiles/6841Project.dir/server/server.c.obj" "gcc" "CMakeFiles/6841Project.dir/server/server.c.obj.d"
