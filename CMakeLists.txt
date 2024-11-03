@@ -30,6 +30,7 @@ add_executable(6841Project
         server/render.h
         functions/keylogger.c
         functions/keylogger.h
+        server/server.h
 )
 
 add_executable(Client_Exe

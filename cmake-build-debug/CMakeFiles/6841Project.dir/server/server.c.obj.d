@@ -318,4 +318,5 @@ CMakeFiles/6841Project.dir/server/server.c.obj: \
  C:/clibs/tff/include/SDL_ttf.h C:/clibs/SDL/include/begin_code.h \
  C:/clibs/SDL/include/close_code.h \
  C:\Users\olive\CLionProjects\6841-Project\server\render.h \
- C:\Users\olive\CLionProjects\6841-Project\server\microui.h
+ C:\Users\olive\CLionProjects\6841-Project\server\microui.h \
+ C:\Users\olive\CLionProjects\6841-Project\server\server.h

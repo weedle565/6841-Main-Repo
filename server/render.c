@@ -3,10 +3,6 @@
 #include <SDL_image.h>
 #include "render.h"
 
-static SDL_Window* window;
-static SDL_Renderer* renderer;
-static TTF_Font* font;
-
 const SDL_Rect drag_area = {0, 0, 700, 25};
 
 SDL_HitTestResult hit(SDL_Window*, const SDL_Point* area, void* data) {
@@ -18,15 +14,15 @@ SDL_HitTestResult hit(SDL_Window*, const SDL_Point* area, void* data) {
 }
 
 void init(const int width, const int height) {
-    window = SDL_CreateWindow("Project", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    mainWindow = SDL_CreateWindow("Project", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_ALLOW_HIGHDPI);
+    renderer = SDL_CreateRenderer(mainWindow, -1, 0);
     font = TTF_OpenFont("font.ttf", 12);
 
-    SDL_SetWindowHitTest(window, hit, NULL);
+    SDL_SetWindowHitTest(mainWindow, hit, NULL);
 }
 
 void clean() {
-    SDL_DestroyWindow(window);
+    SDL_DestroyWindow(mainWindow);
     SDL_DestroyRenderer(renderer);
     TTF_CloseFont(font);
 }

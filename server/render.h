@@ -2,6 +2,9 @@
 #include "microui.h"
 #include <SDL.h>
 
+static SDL_Window* mainWindow;
+static SDL_Renderer* renderer;
+static TTF_Font* font;
 int* get_text_size(const char *text);
 void draw_text(const char *text, mu_Vec2 pos, mu_Color colour);
 void draw_rect(mu_Rect rect, mu_Color colour);

